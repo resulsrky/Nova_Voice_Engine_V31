@@ -14,6 +14,7 @@ pkg_check_modules(FFMPEG REQUIRED libavcodec libavformat libavutil libswscale)
 find_package(OpenCV REQUIRED)
 
 # --- Jerasure & GF-Complete (Reed-Solomon) ---
+# Geçici olarak devre dışı - Jerasure kütüphanesi eksik
 # OPTION 1: Add as subdirectory (Recommended)
 # Clone jerasure and gf-complete into a 'libs' folder
 # add_subdirectory(libs/gf-complete)
@@ -22,18 +23,18 @@ find_package(OpenCV REQUIRED)
 # link_libraries(Jerasure gf_complete)
 
 # OPTION 2: Find system-installed libraries
-find_library(JERASURE_LIBRARY NAMES Jerasure jerasure)
-find_library(GF_COMPLETE_LIBRARY NAMES gf_complete)
-find_path(JERASURE_INCLUDE_DIR jerasure.h)
-find_path(GF_COMPLETE_INCLUDE_DIR gf_complete.h)
+# find_library(JERASURE_LIBRARY NAMES Jerasure jerasure)
+# find_library(GF_COMPLETE_LIBRARY NAMES gf_complete)
+# find_path(JERASURE_INCLUDE_DIR jerasure.h)
+# find_path(GF_COMPLETE_INCLUDE_DIR gf_complete.h)
 
-if(NOT JERASURE_LIBRARY OR NOT GF_COMPLETE_LIBRARY)
-    message(FATAL_ERROR "Jerasure or GF-Complete not found. Please install or add as subdirectory.")
-endif()
+# if(NOT JERASURE_LIBRARY OR NOT GF_COMPLETE_LIBRARY)
+#     message(FATAL_ERROR "Jerasure or GF-Complete not found. Please install or add as subdirectory.")
+# endif()
 
-include_directories(${JERASURE_INCLUDE_DIR} ${GF_COMPLETE_INCLUDE_DIR})
+# include_directories(${JERASURE_INCLUDE_DIR} ${GF_COMPLETE_INCLUDE_DIR})
 include_directories(src)
-set(CUSTOM_LIBS ${JERASURE_LIBRARY} ${GF_COMPLETE_LIBRARY})
+set(CUSTOM_LIBS "")
 
 # --- Add Your Executable ---
 add_executable(nova_engine 

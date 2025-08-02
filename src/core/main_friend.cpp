@@ -1,35 +1,41 @@
 // src/core/main_friend.cpp - Arkadaşınız için
 #include "engine.h"
 #include "../common/logger.h"
-#include <stdexcept>
 #include <iostream>
+#include <stdexcept>
 
 int main() {
     try {
-        // Arkadaşınızın IP'si: 192.168.1.5
-        // Sizin IP'niz: 192.168.1.254
-        const std::string local_ip = "192.168.1.5";
-        const std::string remote_ip = "192.168.1.254";
-        const uint16_t base_port = 60000;
-        const size_t num_tunnels = 5;
-
-        std::cout << "Nova Engine V3 - UDP Video Chat (Friend)" << std::endl;
-        std::cout << "Local IP: " << local_ip << std::endl;
-        std::cout << "Remote IP: " << remote_ip << std::endl;
-        std::cout << "Base Port: " << base_port << std::endl;
-        std::cout << "Tunnels: " << num_tunnels << std::endl;
-        std::cout << "Starting engine..." << std::endl;
-
-        Engine nova_engine(remote_ip, base_port, num_tunnels);
-        nova_engine.run();
-
-    } catch (const std::runtime_error& e) {
-        LOG_ERROR("A critical error occurred: ", e.what());
-        return 1;
-    } catch (...) {
-        LOG_ERROR("An unknown critical error occurred.");
+        // Engine konfigürasyonu
+        EngineConfig config;
+        config.width = 1280;
+        config.height = 720;
+        config.fps = 30;
+        config.bitrate_kbps = 3000;
+        config.max_chunk_size = 1000;
+        config.k_chunks = 8;
+        config.r_chunks = 2;
+        config.jitter_buffer_ms = 100;
+        
+        // Path konfigürasyonu
+        config.paths.emplace_back("192.168.1.254", 45000);
+        
+        // Engine'i başlat
+        Engine nova_engine(config);
+        nova_engine.start();
+        
+        // Ana döngü
+        std::cout << "Nova Engine V3 başlatıldı. Çıkmak için Ctrl+C kullanın." << std::endl;
+        
+        // Basit bir bekleme döngüsü
+        while (nova_engine.is_running()) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+        
+    } catch (const std::exception& e) {
+        LOG_ERROR("Kritik hata oluştu: " + std::string(e.what()));
         return 1;
     }
-
+    
     return 0;
 } 

@@ -75,7 +75,7 @@ PathInfo* Scheduler::get_next_path(Strategy strategy) {
         case ROUND_ROBIN:
             return round_robin_select();
         case WEIGHTED_ROUND_ROBIN:
-            return weighted_round_round_robin_select();
+            return weighted_round_robin_select();
         case LOWEST_RTT:
             return lowest_rtt_select();
         case LOWEST_LOSS:
@@ -101,7 +101,7 @@ PathInfo* Scheduler::round_robin_select() {
     return selected->is_active ? selected : nullptr;
 }
 
-PathInfo* Scheduler::weighted_round_round_robin_select() {
+PathInfo* Scheduler::weighted_round_robin_select() {
     if (paths_.empty()) return nullptr;
     
     // Calculate weights for all active paths

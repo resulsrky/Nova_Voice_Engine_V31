@@ -1,48 +1,54 @@
 // smart_collector.h
 #pragma once
-
-#include "../media/slicer.h"
-#include "../media/erasure_coder.h"
+#include <vector>
+#include <cstdint>
+#include <memory>
 #include <map>
-#include <mutex>
-#include <thread>
-#include <atomic>
 #include <chrono>
-#include <functional>
-
-using FrameData = std::vector<uint8_t>;
-using OnFrameReadyCallback = std::function<void(FrameData)>;
+#include <atomic>
+#include <thread>
+#include <mutex>
 
 class SmartCollector {
-private:
-    struct FrameBuffer {
-        std::chrono::steady_clock::time_point first_chunk_arrival;
-        std::vector<ChunkPtr> received_chunks;
-        uint16_t k = 0;
-        uint16_t r = 0;
-        int data_chunks_count = 0;
-        bool reconstructed = false;
-    };
-
 public:
-    SmartCollector(OnFrameReadyCallback cb, std::shared_ptr<ErasureCoder> fec_decoder);
+    explicit SmartCollector(uint32_t jitter_buffer_ms);
     ~SmartCollector();
     
+    // Start/stop collector
     void start();
     void stop();
-    void pushChunk(ChunkPtr chunk);
+    
+    // Add chunk to collector
+    void add_chunk(uint32_t sequence_number, uint16_t chunk_id, 
+                   uint16_t total_chunks, const std::vector<uint8_t>& chunk_data);
+    
+    // Get complete frames
+    std::vector<std::vector<uint8_t>> get_complete_frames();
+    
+    // Get statistics
+    size_t get_frame_count() const;
+    size_t get_complete_frame_count() const;
+    uint32_t get_jitter_buffer_ms() const;
+    bool is_running() const;
 
 private:
-    void flush_loop();
-
-    std::map<uint32_t, FrameBuffer> frame_map_;
-    std::mutex map_mutex_;
-    std::thread flush_thread_;
+    struct FrameBuffer {
+        std::vector<std::vector<uint8_t>> chunks;
+        uint16_t received_chunks;
+        std::chrono::steady_clock::time_point timestamp;
+        
+        explicit FrameBuffer(uint16_t total_chunks);
+    };
+    
+    uint32_t jitter_buffer_ms_;
     std::atomic<bool> running_{false};
+    std::thread collector_thread_;
+    mutable std::mutex chunks_mutex_;
     
-    OnFrameReadyCallback on_frame_ready_;
-    std::shared_ptr<ErasureCoder> fec_decoder_;
+    std::map<uint32_t, std::unique_ptr<FrameBuffer>> frame_buffers_;
+    std::vector<uint32_t> complete_frames_;
     
-    const std::chrono::milliseconds JITTER_WINDOW{50};
-    const std::chrono::milliseconds FLUSH_INTERVAL{25};
+    // Internal methods
+    void collector_loop();
+    void cleanup_old_frames();
 };

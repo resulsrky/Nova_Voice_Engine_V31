@@ -1,108 +1,212 @@
 // ffmpeg_encoder.cpp
 #include "ffmpeg_encoder.h"
+#include <libavcodec/avcodec.h>
+#include <libavutil/imgutils.h>
+#include <libavutil/opt.h>
+#include <libswscale/swscale.h>
 #include <stdexcept>
-#include <iostream>
+#include <cstring>
 
-FFmpegEncoder::FFmpegEncoder(int width, int height, int fps, int initial_bitrate_kbps)
-    : frame_width_(width), frame_height_(height) {
-    
-    frame_ = av_frame_alloc();
-    pkt_ = av_packet_alloc();
-    if (!frame_ || !pkt_) {
-        throw std::runtime_error("Could not allocate AVFrame or AVPacket");
-    }
-
-    frame_->width = frame_width_;
-    frame_->height = frame_height_;
-    frame_->format = AV_PIX_FMT_YUV420P; // x264 requires YUV
-
-    av_frame_get_buffer(frame_, 0);
-    
-    openCodec(width, height, fps, initial_bitrate_kbps);
+FFmpegEncoder::FFmpegEncoder(const EncoderConfig& config)
+    : config_(config), codec_(nullptr), codec_context_(nullptr),
+      frame_(nullptr), packet_(nullptr), sws_context_(nullptr) {
 }
 
 FFmpegEncoder::~FFmpegEncoder() {
-    closeCodec();
-    av_frame_free(&frame_);
-    av_packet_free(&pkt_);
+    cleanup();
 }
 
-void FFmpegEncoder::openCodec(int width, int height, int fps, int bitrate_kbps) {
-    const AVCodec* codec = avcodec_find_encoder_by_name("libx264");
-    if (!codec) {
-        throw std::runtime_error("Codec libx264 not found");
+bool FFmpegEncoder::initialize() {
+    try {
+        // Find encoder
+        codec_ = avcodec_find_encoder_by_name(config_.codec_name.c_str());
+        if (!codec_) {
+            throw std::runtime_error("Encoder bulunamadı: " + config_.codec_name);
+        }
+        
+        // Allocate codec context
+        codec_context_ = avcodec_alloc_context3(codec_);
+        if (!codec_context_) {
+            throw std::runtime_error("Codec context oluşturulamadı");
+        }
+        
+        // Set parameters
+        codec_context_->width = config_.width;
+        codec_context_->height = config_.height;
+        codec_context_->time_base = {1, config_.fps};
+        codec_context_->framerate = {config_.fps, 1};
+        codec_context_->pix_fmt = AV_PIX_FMT_YUV420P;
+        codec_context_->bit_rate = config_.bitrate * 1000; // Convert to bits per second
+        
+        // Set codec-specific options
+        if (codec_->id == AV_CODEC_ID_H264) {
+            av_opt_set(codec_context_->priv_data, "preset", "ultrafast", 0);
+            av_opt_set(codec_context_->priv_data, "tune", "zerolatency", 0);
+        }
+        
+        // Open codec
+        int ret = avcodec_open2(codec_context_, codec_, nullptr);
+        if (ret < 0) {
+            throw std::runtime_error("Codec açılamadı");
+        }
+        
+        // Allocate frame
+        if (!init_frame()) {
+            throw std::runtime_error("Frame oluşturulamadı");
+        }
+        
+        // Allocate packet
+        packet_ = av_packet_alloc();
+        if (!packet_) {
+            throw std::runtime_error("Packet oluşturulamadı");
+        }
+        
+        return true;
+        
+    } catch (const std::exception& e) {
+        cleanup();
+        return false;
     }
-    
-    codec_ctx_ = avcodec_alloc_context3(codec);
-    if (!codec_ctx_) {
-        throw std::runtime_error("Could not allocate video codec context");
-    }
-
-    codec_ctx_->bit_rate = bitrate_kbps * 1000;
-    codec_ctx_->width = width;
-    codec_ctx_->height = height;
-    codec_ctx_->time_base = {1, fps};
-    codec_ctx_->framerate = {fps, 1};
-    codec_ctx_->gop_size = fps; // Keyframe every second
-    codec_ctx_->max_b_frames = 0; // No B-frames for low latency
-    codec_ctx_->pix_fmt = AV_PIX_FMT_YUV420P;
-
-    // Netflix-quality and low-latency settings
-    av_opt_set(codec_ctx_->priv_data, "preset", "veryfast", 0);
-    av_opt_set(codec_ctx_->priv_data, "tune", "film", 0);
-    av_opt_set(codec_ctx_->priv_data, "threads", "auto", 0); // Multi-threading
-
-    if (avcodec_open2(codec_ctx_, codec, nullptr) < 0) {
-        throw std::runtime_error("Could not open codec");
-    }
-    std::cout << "Opened encoder: " << bitrate_kbps << " kbps @" << fps << "fps" << std::endl;
 }
 
-void FFmpegEncoder::closeCodec() {
-    if (codec_ctx_) {
-        avcodec_free_context(&codec_ctx_);
-        codec_ctx_ = nullptr;
+bool FFmpegEncoder::init_frame() {
+    frame_ = av_frame_alloc();
+    if (!frame_) return false;
+    
+    frame_->format = AV_PIX_FMT_YUV420P;
+    frame_->width = config_.width;
+    frame_->height = config_.height;
+    
+    int ret = av_frame_get_buffer(frame_, 0);
+    if (ret < 0) return false;
+    
+    return true;
+}
+
+bool FFmpegEncoder::convert_frame(const uint8_t* input_data, int width, int height) {
+    if (!sws_context_) {
+        sws_context_ = sws_getContext(width, height, AV_PIX_FMT_RGB24,
+                                     config_.width, config_.height, AV_PIX_FMT_YUV420P,
+                                     SWS_BILINEAR, nullptr, nullptr, nullptr);
+        if (!sws_context_) return false;
+    }
+    
+    // Set up source frame
+    uint8_t* src_data[4] = {const_cast<uint8_t*>(input_data), nullptr, nullptr, nullptr};
+    int src_linesize[4] = {width * 3, 0, 0, 0}; // RGB24 = 3 bytes per pixel
+    
+    // Set up destination frame
+    uint8_t* dst_data[4] = {frame_->data[0], frame_->data[1], frame_->data[2], frame_->data[3]};
+    int dst_linesize[4] = {frame_->linesize[0], frame_->linesize[1], frame_->linesize[2], frame_->linesize[3]};
+    
+    // Convert
+    int ret = sws_scale(sws_context_, src_data, src_linesize, 0, height,
+                        dst_data, dst_linesize);
+    return ret > 0;
+}
+
+void FFmpegEncoder::cleanup() {
+    if (sws_context_) {
+        sws_freeContext(sws_context_);
+        sws_context_ = nullptr;
+    }
+    
+    if (packet_) {
+        av_packet_free(&packet_);
+        packet_ = nullptr;
+    }
+    
+    if (frame_) {
+        av_frame_free(&frame_);
+        frame_ = nullptr;
+    }
+    
+    if (codec_context_) {
+        avcodec_free_context(&codec_context_);
+        codec_context_ = nullptr;
+    }
+    
+    codec_ = nullptr;
+}
+
+std::vector<uint8_t> FFmpegEncoder::encode_frame(const uint8_t* frame_data, int width, int height) {
+    if (!is_initialized()) {
+        return {};
+    }
+    
+    try {
+        // Convert frame format
+        if (!convert_frame(frame_data, width, height)) {
+            return {};
+        }
+        
+        // Set frame timestamp
+        static int64_t frame_count = 0;
+        frame_->pts = frame_count++;
+        
+        // Send frame to encoder
+        int ret = avcodec_send_frame(codec_context_, frame_);
+        if (ret < 0) {
+            return {};
+        }
+        
+        // Receive encoded packet
+        std::vector<uint8_t> encoded_data;
+        while (ret >= 0) {
+            ret = avcodec_receive_packet(codec_context_, packet_);
+            if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) {
+                break;
+            } else if (ret < 0) {
+                return {};
+            }
+            
+            // Copy packet data
+            encoded_data.insert(encoded_data.end(), 
+                              packet_->data, packet_->data + packet_->size);
+            
+            av_packet_unref(packet_);
+        }
+        
+        return encoded_data;
+        
+    } catch (const std::exception&) {
+        return {};
     }
 }
 
-void FFmpegEncoder::reconfigure(int bitrate_kbps, int fps) {
-    std::lock_guard<std::mutex> lock(codec_mutex_);
+std::vector<std::vector<uint8_t>> FFmpegEncoder::flush() {
+    std::vector<std::vector<uint8_t>> packets;
     
-    // A simple approach is to close and reopen the codec.
-    // Some parameters can be changed on the fly, but bitrate/fps often require a full reinit.
-    closeCodec();
-    openCodec(frame_width_, frame_height_, fps, bitrate_kbps);
-}
-
-std::vector<uint8_t> FFmpegEncoder::encode(const std::vector<uint8_t>& raw_frame_data) {
-    std::lock_guard<std::mutex> lock(codec_mutex_);
-    
-    // This is a placeholder for color conversion (e.g., BGR -> YUV420p)
-    // You would use libswscale for this in a real app.
-    // For now, we assume the input is already YUV420p.
-    // A simplified copy for demonstration:
-    // This part is CRITICAL and needs a real sws_scale implementation.
-    int in_linesize[1] = { frame_width_ * 3 }; // Assuming BGR input
-    // sws_scale(...);
-    // For this example, let's just pretend frame_ is filled.
-
-    static int64_t pts = 0;
-    frame_->pts = pts++;
-
-    int ret = avcodec_send_frame(codec_ctx_, frame_);
-    if (ret < 0) {
-        return {}; // Error
+    if (!is_initialized()) {
+        return packets;
     }
-
-    ret = avcodec_receive_packet(codec_ctx_, pkt_);
-    if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) {
-        return {}; // Need more frames or end of stream
-    } else if (ret < 0) {
-        return {}; // Error
-    }
-
-    std::vector<uint8_t> encoded_data(pkt_->data, pkt_->data + pkt_->size);
-    av_packet_unref(pkt_);
     
-    return encoded_data;
+    try {
+        // Send NULL frame to flush encoder
+        int ret = avcodec_send_frame(codec_context_, nullptr);
+        if (ret < 0) {
+            return packets;
+        }
+        
+        // Receive remaining packets
+        while (ret >= 0) {
+            ret = avcodec_receive_packet(codec_context_, packet_);
+            if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) {
+                break;
+            } else if (ret < 0) {
+                break;
+            }
+            
+            // Copy packet data
+            std::vector<uint8_t> packet_data(packet_->data, packet_->data + packet_->size);
+            packets.push_back(std::move(packet_data));
+            
+            av_packet_unref(packet_);
+        }
+        
+    } catch (const std::exception&) {
+        // Ignore errors during flush
+    }
+    
+    return packets;
 }
