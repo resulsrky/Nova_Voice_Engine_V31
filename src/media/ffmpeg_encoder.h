@@ -18,9 +18,12 @@ public:
         int fps;
         int bitrate;
         std::string codec_name;
+        std::string preset;
+        std::string tune;
         
-        EncoderConfig(int w, int h, int f, int b, const std::string& c = "libx264")
-            : width(w), height(h), fps(f), bitrate(b), codec_name(c) {}
+        EncoderConfig(int w, int h, int f, int b, const std::string& c = "libx264",
+                     const std::string& p = "veryfast", const std::string& t = "grain")
+            : width(w), height(h), fps(f), bitrate(b), codec_name(c), preset(p), tune(t) {}
     };
     
     FFmpegEncoder(const EncoderConfig& config);
@@ -71,9 +74,12 @@ public:
         int fps;
         int bitrate;
         std::string codec_name;
+        std::string preset;
+        std::string tune;
         
-        EncoderConfig(int w, int h, int f, int b, const std::string& c = "libx264")
-            : width(w), height(h), fps(f), bitrate(b), codec_name(c) {}
+        EncoderConfig(int w, int h, int f, int b, const std::string& c = "libx264",
+                     const std::string& p = "veryfast", const std::string& t = "grain")
+            : width(w), height(h), fps(f), bitrate(b), codec_name(c), preset(p), tune(t) {}
     };
     
     FFmpegEncoder(const EncoderConfig& config) {}
@@ -82,7 +88,7 @@ public:
     bool initialize() { return false; }
     std::vector<uint8_t> encode_frame(const uint8_t*, int, int) { return {}; }
     std::vector<std::vector<uint8_t>> flush() { return {}; }
-    const EncoderConfig& get_config() const { static EncoderConfig c(0,0,0,0,""); return c; }
+    const EncoderConfig& get_config() const { static EncoderConfig c(0,0,0,0,"","",""); return c; }
     bool is_initialized() const { return false; }
 };
 #endif

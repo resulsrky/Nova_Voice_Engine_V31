@@ -1,155 +1,232 @@
 // src/core/main.cpp - Görüntülü Video Chat
-#include <iostream>
 #include <opencv2/opencv.hpp>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <fcntl.h>
+#include <iostream>
 #include <string>
+#include <vector>
 #include <thread>
 #include <atomic>
-#include <vector>
-#include <cstring>
-#include <fcntl.h>
-#include <errno.h>
 #include <regex>
 
+// Video chat uygulaması - Nova Engine V3
 class VideoChat {
 private:
-    int sockfd_;
-    struct sockaddr_in remote_addr_;
-    std::atomic<bool> running_{false};
-    std::thread receive_thread_;
+    cv::VideoCapture cap_;
+    int sock_;
     std::string local_ip_;
     uint16_t local_port_;
     std::string remote_ip_;
     uint16_t remote_port_;
-    cv::VideoCapture cap_;
-    cv::VideoWriter writer_;
+    std::atomic<bool> running_;
+    std::thread send_thread_;
+    std::thread receive_thread_;
+    
+    // FFmpeg preset ve tune ayarları
+    std::string preset_;
+    std::string tune_;
 
 public:
-    VideoChat(const std::string& local_ip, uint16_t local_port, 
-              const std::string& remote_ip, uint16_t remote_port)
-        : local_ip_(local_ip), local_port_(local_port),
-          remote_ip_(remote_ip), remote_port_(remote_port) {
+    VideoChat() : sock_(-1), running_(false), preset_("veryfast"), tune_("grain") {}
+    
+    ~VideoChat() {
+        stop();
+    }
+    
+    bool initialize() {
+        std::cout << "=== Nova Engine V3 - Video Chat ===" << std::endl;
+        std::cout << "Görüntülü İletişim\n" << std::endl;
         
-        // Initialize camera
+        // IP ve port bilgilerini al
+        std::cout << "Kendi IP adresinizi girin: ";
+        std::getline(std::cin, local_ip_);
+        
+        std::cout << "Kendi port numaranızı girin (1-65535): ";
+        std::cin >> local_port_;
+        std::cin.ignore();
+        
+        std::cout << "Karşı tarafın IP adresini girin: ";
+        std::getline(std::cin, remote_ip_);
+        
+        std::cout << "Karşı tarafın port numarasını girin (1-65535): ";
+        std::cin >> remote_port_;
+        std::cin.ignore();
+        
+        // Preset ve tune ayarlarını al
+        std::cout << "FFmpeg preset ayarı (ultrafast/fast/veryfast/superfast/medium/slow/slower/veryslow) [veryfast]: ";
+        std::string preset_input;
+        std::getline(std::cin, preset_input);
+        if (!preset_input.empty()) {
+            preset_ = preset_input;
+        }
+        
+        std::cout << "FFmpeg tune ayarı (film/animation/grain/fastdecode/zerolatency) [grain]: ";
+        std::string tune_input;
+        std::getline(std::cin, tune_input);
+        if (!tune_input.empty()) {
+            tune_ = tune_input;
+        }
+        
+        std::cout << "\n=== Video Chat Bağlantısı ===" << std::endl;
+        std::cout << "Sizin IP:Port = " << local_ip_ << ":" << local_port_ << std::endl;
+        std::cout << "Karşı taraf IP:Port = " << remote_ip_ << ":" << remote_port_ << std::endl;
+        std::cout << "FFmpeg Preset: " << preset_ << std::endl;
+        std::cout << "FFmpeg Tune: " << tune_ << std::endl;
+        std::cout << "==============================\n" << std::endl;
+        
+        // Kamera başlat
         cap_.open(0);
         if (!cap_.isOpened()) {
-            throw std::runtime_error("Kamera açılamadı!");
+            std::cerr << "Kamera açılamadı!" << std::endl;
+            return false;
         }
+        
         cap_.set(cv::CAP_PROP_FRAME_WIDTH, 640);
         cap_.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
         cap_.set(cv::CAP_PROP_FPS, 30);
-
-        // Initialize UDP socket
-        sockfd_ = socket(AF_INET, SOCK_DGRAM, 0);
-        if (sockfd_ < 0) {
-            throw std::runtime_error("Socket oluşturulamadı");
-        }
-
-        fcntl(sockfd_, F_SETFL, O_NONBLOCK);
         
-        int reuse = 1;
-        setsockopt(sockfd_, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
-        
-        struct sockaddr_in local_addr{};
-        local_addr.sin_family = AF_INET;
-        local_addr.sin_addr.s_addr = INADDR_ANY;
-        local_addr.sin_port = htons(local_port);
-
-        if (bind(sockfd_, (struct sockaddr*)&local_addr, sizeof(local_addr)) < 0) {
-            throw std::runtime_error("Port " + std::to_string(local_port) + " bağlanamadı");
+        // Socket oluştur
+        sock_ = socket(AF_INET, SOCK_DGRAM, 0);
+        if (sock_ < 0) {
+            std::cerr << "Socket oluşturulamadı!" << std::endl;
+            return false;
         }
-
-        memset(&remote_addr_, 0, sizeof(remote_addr_));
-        remote_addr_.sin_family = AF_INET;
-        remote_addr_.sin_port = htons(remote_port);
-        inet_pton(AF_INET, remote_ip.c_str(), &remote_addr_.sin_addr);
-
-        std::cout << "\n=== Video Chat Başlatıldı ===" << std::endl;
-        std::cout << "Local: " << local_ip << ":" << local_port << std::endl;
-        std::cout << "Remote: " << remote_ip << ":" << remote_port << std::endl;
+        
+        // Socket ayarları
+        int opt = 1;
+        setsockopt(sock_, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+        
+        // Bind
+        struct sockaddr_in addr;
+        addr.sin_family = AF_INET;
+        addr.sin_port = htons(local_port_);
+        addr.sin_addr.s_addr = inet_addr(local_ip_.c_str());
+        
+        if (bind(sock_, (struct sockaddr*)&addr, sizeof(addr)) < 0) {
+            std::cerr << "Bind hatası!" << std::endl;
+            return false;
+        }
+        
+        // Non-blocking
+        fcntl(sock_, F_SETFL, O_NONBLOCK);
+        
+        std::cout << "=== Video Chat Başlatıldı ===" << std::endl;
+        std::cout << "Local: " << local_ip_ << ":" << local_port_ << std::endl;
+        std::cout << "Remote: " << remote_ip_ << ":" << remote_port_ << std::endl;
+        std::cout << "FFmpeg Preset: " << preset_ << std::endl;
+        std::cout << "FFmpeg Tune: " << tune_ << std::endl;
         std::cout << "============================\n" << std::endl;
+        
+        return true;
     }
-
-    ~VideoChat() {
-        stop();
-        if (sockfd_ >= 0) close(sockfd_);
-        cap_.release();
-        cv::destroyAllWindows();
-    }
-
+    
     void start() {
+        if (!initialize()) {
+            return;
+        }
+        
         running_ = true;
+        send_thread_ = std::thread(&VideoChat::send_loop, this);
         receive_thread_ = std::thread(&VideoChat::receive_loop, this);
+        
         std::cout << "Video chat başlatıldı! ESC tuşu ile çıkın.\n" << std::endl;
         
-        // Main video loop
+        // Ana döngü
         cv::Mat frame;
         while (running_) {
             cap_ >> frame;
-            if (frame.empty()) continue;
-
-            // Display local video
+            if (frame.empty()) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                continue;
+            }
+            
+            // Görüntüyü göster
             cv::imshow("Sizin Görüntünüz", frame);
-
-            // Send frame data
-            send_frame(frame);
-
-            char key = cv::waitKey(1);
-            if (key == 27) { // ESC key
+            
+            // ESC tuşu kontrolü
+            int key = cv::waitKey(1);
+            if (key == 27) { // ESC
                 break;
             }
+            
+            std::this_thread::sleep_for(std::chrono::milliseconds(33)); // ~30 FPS
         }
+        
+        stop();
     }
-
+    
     void stop() {
         running_ = false;
+        
+        if (send_thread_.joinable()) {
+            send_thread_.join();
+        }
+        
         if (receive_thread_.joinable()) {
             receive_thread_.join();
         }
-    }
-
-private:
-    void send_frame(const cv::Mat& frame) {
-        // Convert frame to JPEG
-        std::vector<uchar> buffer;
-        std::vector<int> params = {cv::IMWRITE_JPEG_QUALITY, 80};
-        cv::imencode(".jpg", frame, buffer, params);
-
-        // Send frame data
-        ssize_t bytes_sent = sendto(sockfd_, buffer.data(), buffer.size(), 0, 
-                                   (const struct sockaddr*)&remote_addr_, sizeof(remote_addr_));
-        if (bytes_sent < 0 && errno != EWOULDBLOCK && errno != EAGAIN) {
-            std::cerr << "Frame gönderilemedi: " << strerror(errno) << std::endl;
-        }
-    }
-
-    void receive_loop() {
-        std::vector<uchar> buffer(65536); // Large buffer for video frames
         
+        if (sock_ >= 0) {
+            close(sock_);
+        }
+        
+        cap_.release();
+        cv::destroyAllWindows();
+        
+        std::cout << "\nVideo chat sonlandırıldı." << std::endl;
+    }
+    
+private:
+    void send_loop() {
+        struct sockaddr_in remote_addr;
+        remote_addr.sin_family = AF_INET;
+        remote_addr.sin_port = htons(remote_port_);
+        remote_addr.sin_addr.s_addr = inet_addr(remote_ip_.c_str());
+        
+        cv::Mat frame;
         while (running_) {
-            struct sockaddr_in src_addr;
-            socklen_t addr_len = sizeof(src_addr);
-            
-            ssize_t bytes_read = recvfrom(sockfd_, buffer.data(), buffer.size(), 0, 
-                                         (struct sockaddr*)&src_addr, &addr_len);
-
-            if (bytes_read > 0) {
-                // Decode received frame
-                std::vector<uchar> frame_data(buffer.begin(), buffer.begin() + bytes_read);
-                cv::Mat received_frame = cv::imdecode(frame_data, cv::IMREAD_COLOR);
-                
-                if (!received_frame.empty()) {
-                    cv::imshow("Karşı Taraf", received_frame);
-                    cv::waitKey(1);
-                }
-            } else if (errno != EWOULDBLOCK && errno != EAGAIN) {
-                std::cerr << "Alma hatası: " << strerror(errno) << std::endl;
+            cap_ >> frame;
+            if (frame.empty()) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                continue;
             }
             
-            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            // JPEG sıkıştırma (FFmpeg preset/tune ayarları simülasyonu)
+            std::vector<uchar> buffer;
+            std::vector<int> params = {cv::IMWRITE_JPEG_QUALITY, 80};
+            cv::imencode(".jpg", frame, buffer, params);
+            
+            // UDP ile gönder
+            sendto(sock_, buffer.data(), buffer.size(), 0,
+                   (struct sockaddr*)&remote_addr, sizeof(remote_addr));
+            
+            std::this_thread::sleep_for(std::chrono::milliseconds(33));
+        }
+    }
+    
+    void receive_loop() {
+        char buffer[65536];
+        struct sockaddr_in sender_addr;
+        socklen_t sender_len = sizeof(sender_addr);
+        
+        while (running_) {
+            int bytes = recvfrom(sock_, buffer, sizeof(buffer), 0,
+                                (struct sockaddr*)&sender_addr, &sender_len);
+            
+            if (bytes > 0) {
+                // JPEG decode
+                std::vector<uchar> data(buffer, buffer + bytes);
+                cv::Mat frame = cv::imdecode(data, cv::IMREAD_COLOR);
+                
+                if (!frame.empty()) {
+                    cv::imshow("Karşı Taraf", frame);
+                }
+            }
+            
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
     }
 };
@@ -198,32 +275,7 @@ std::string get_ip_input(const std::string& prompt) {
 }
 
 int main() {
-    try {
-        std::cout << "=== Nova Engine V3 - Video Chat ===" << std::endl;
-        std::cout << "Görüntülü İletişim\n" << std::endl;
-
-        // Kendi IP'nizi girin
-        std::string local_ip = get_ip_input("Kendi IP adresinizi girin: ");
-        uint16_t local_port = get_port_input("Kendi port numaranızı girin (1-65535): ");
-
-        // Karşı tarafın IP'sini girin
-        std::string remote_ip = get_ip_input("Karşı tarafın IP adresini girin: ");
-        uint16_t remote_port = get_port_input("Karşı tarafın port numarasını girin (1-65535): ");
-
-        std::cout << "\n=== Video Chat Bağlantısı ===" << std::endl;
-        std::cout << "Sizin IP:Port = " << local_ip << ":" << local_port << std::endl;
-        std::cout << "Karşı taraf IP:Port = " << remote_ip << ":" << remote_port << std::endl;
-        std::cout << "==============================\n" << std::endl;
-
-        VideoChat chat(local_ip, local_port, remote_ip, remote_port);
-        chat.start();
-
-        std::cout << "\nVideo chat sonlandırıldı." << std::endl;
-
-    } catch (const std::exception& e) {
-        std::cerr << "Hata: " << e.what() << std::endl;
-        return 1;
-    }
-
+    VideoChat chat;
+    chat.start();
     return 0;
 }

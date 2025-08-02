@@ -371,6 +371,33 @@ src/media/erasure_coder.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/nova_engine_friend.dir/build.make CMakeFiles/nova_engine_friend.dir/src/media/erasure_coder.cpp.s
 .PHONY : src/media/erasure_coder.cpp.s
 
+src/media/ffmpeg_encoder.o: src/media/ffmpeg_encoder.cpp.o
+.PHONY : src/media/ffmpeg_encoder.o
+
+# target to build an object file
+src/media/ffmpeg_encoder.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nova_engine.dir/build.make CMakeFiles/nova_engine.dir/src/media/ffmpeg_encoder.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nova_engine_friend.dir/build.make CMakeFiles/nova_engine_friend.dir/src/media/ffmpeg_encoder.cpp.o
+.PHONY : src/media/ffmpeg_encoder.cpp.o
+
+src/media/ffmpeg_encoder.i: src/media/ffmpeg_encoder.cpp.i
+.PHONY : src/media/ffmpeg_encoder.i
+
+# target to preprocess a source file
+src/media/ffmpeg_encoder.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nova_engine.dir/build.make CMakeFiles/nova_engine.dir/src/media/ffmpeg_encoder.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nova_engine_friend.dir/build.make CMakeFiles/nova_engine_friend.dir/src/media/ffmpeg_encoder.cpp.i
+.PHONY : src/media/ffmpeg_encoder.cpp.i
+
+src/media/ffmpeg_encoder.s: src/media/ffmpeg_encoder.cpp.s
+.PHONY : src/media/ffmpeg_encoder.s
+
+# target to generate assembly for a file
+src/media/ffmpeg_encoder.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nova_engine.dir/build.make CMakeFiles/nova_engine.dir/src/media/ffmpeg_encoder.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nova_engine_friend.dir/build.make CMakeFiles/nova_engine_friend.dir/src/media/ffmpeg_encoder.cpp.s
+.PHONY : src/media/ffmpeg_encoder.cpp.s
+
 src/media/slicer.o: src/media/slicer.cpp.o
 .PHONY : src/media/slicer.o
 
@@ -541,6 +568,9 @@ help:
 	@echo "... src/media/erasure_coder.o"
 	@echo "... src/media/erasure_coder.i"
 	@echo "... src/media/erasure_coder.s"
+	@echo "... src/media/ffmpeg_encoder.o"
+	@echo "... src/media/ffmpeg_encoder.i"
+	@echo "... src/media/ffmpeg_encoder.s"
 	@echo "... src/media/slicer.o"
 	@echo "... src/media/slicer.i"
 	@echo "... src/media/slicer.s"

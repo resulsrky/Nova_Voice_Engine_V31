@@ -5,6 +5,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/nova_engine.dir/src/core/main.cpp.o.d"
   "CMakeFiles/nova_engine.dir/src/media/erasure_coder.cpp.o"
   "CMakeFiles/nova_engine.dir/src/media/erasure_coder.cpp.o.d"
+  "CMakeFiles/nova_engine.dir/src/media/ffmpeg_encoder.cpp.o"
+  "CMakeFiles/nova_engine.dir/src/media/ffmpeg_encoder.cpp.o.d"
   "CMakeFiles/nova_engine.dir/src/media/slicer.cpp.o"
   "CMakeFiles/nova_engine.dir/src/media/slicer.cpp.o.d"
   "CMakeFiles/nova_engine.dir/src/network/path_monitor.cpp.o"

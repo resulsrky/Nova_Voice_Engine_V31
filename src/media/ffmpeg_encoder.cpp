@@ -4,6 +4,7 @@
 #ifdef FFMPEG_AVAILABLE
 #include <libavcodec/avcodec.h>
 #include <libavutil/imgutils.h>
+#include <libavutil/opt.h>
 #include <libswscale/swscale.h>
 #include <vector>
 #include <memory>
@@ -42,6 +43,12 @@ bool FFmpegEncoder::initialize() {
         codec_context_->bit_rate = config_.bitrate;
         codec_context_->gop_size = 10;
         codec_context_->max_b_frames = 0;
+        
+        // Set codec-specific options (preset and tune)
+        if (codec_->id == AV_CODEC_ID_H264) {
+            av_opt_set(codec_context_->priv_data, "preset", config_.preset.c_str(), 0);
+            av_opt_set(codec_context_->priv_data, "tune", config_.tune.c_str(), 0);
+        }
         
         // Open codec
         if (avcodec_open2(codec_context_, codec_, nullptr) < 0) {

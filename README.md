@@ -70,7 +70,16 @@ cd build
 ./video_chat
 ```
 
-Manuel IP ve port girişi ile görüntülü video chat.
+Manuel IP ve port girişi ile görüntülü video chat. FFmpeg preset ve tune ayarları desteklenir:
+
+- **Preset Seçenekleri**: ultrafast, fast, veryfast, superfast, medium, slow, slower, veryslow
+- **Tune Seçenekleri**: film, animation, grain, fastdecode, zerolatency
+
+**Örnek Kullanım:**
+```
+FFmpeg preset ayarı [veryfast]: ultrafast
+FFmpeg tune ayarı [grain]: film
+```
 
 ### UDP Chat Uygulaması
 

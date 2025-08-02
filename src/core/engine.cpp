@@ -31,7 +31,7 @@ void Engine::initialize_components() {
         // Initialize FFmpeg encoder (if available)
         FFmpegEncoder::EncoderConfig encoder_config(
             config_.width, config_.height, config_.fps, 
-            config_.bitrate_kbps, "libx264"
+            config_.bitrate_kbps, "libx264", "veryfast", "grain"
         );
         encoder_ = std::make_unique<FFmpegEncoder>(encoder_config);
         
