@@ -1,113 +1,195 @@
-# Nova Engine V3 - Görüntülü İletişim Sistemi
+# Nova Engine V3
 
-## 🎥 Özellikler
+Gelişmiş video iletişim motoru - UDP tabanlı, düşük gecikme süreli, FEC destekli video streaming.
 
-- ✅ **Gerçek zamanlı video görüntüleme**
-- ✅ **Kamera yakalama (OpenCV)**
-- ✅ **JPEG sıkıştırma (80% kalite)**
-- ✅ **UDP üzerinden video streaming**
-- ✅ **Manuel IP/Port girişi**
-- ✅ **İki pencere: "Sizin Görüntünüz" ve "Karşı Taraf"**
-- ✅ **ESC tuşu ile çıkış**
+## 🚀 Özellikler
 
-## 🚀 Hızlı Başlangıç
+- **Düşük Gecikme Süresi**: UDP tabanlı hızlı video iletimi
+- **Forward Error Correction (FEC)**: Paket kayıplarını telafi eden Reed-Solomon kodlama
+- **Adaptif Path Seçimi**: RTT ve paket kaybına göre en iyi yol seçimi
+- **Jitter Buffer**: Ağ gecikmelerini dengeleyen akıllı tampon
+- **Çoklu Path Desteği**: Paralel ağ yolları ile yedeklilik
+- **Gerçek Zamanlı Video**: OpenCV ile kamera yakalama ve görüntüleme
 
-### 1. Derleme
+## 📋 Gereksinimler
+
+### Zorunlu Bağımlılıklar
+- **OpenCV 4.x**: Video işleme için
+- **CMake 3.16+**: Build sistemi
+- **C++17**: Modern C++ özellikleri
+- **pkg-config**: Kütüphane bulma
+
+### Opsiyonel Bağımlılıklar
+- **FFmpeg**: Video encoding/decoding (otomatik algılanır)
+- **Jerasure**: Reed-Solomon FEC (otomatik algılanır)
+
+## 🛠️ Kurulum
+
+### 1. Otomatik Kurulum (Önerilen)
 
 ```bash
-# Kendi bilgisayarınızda
-cd Nova_Engine_V3
-mkdir -p build && cd build
+# Bağımlılıkları otomatik kur
+./install_dependencies.sh
+
+# Projeyi build et
+mkdir build && cd build
 cmake ..
-make video_chat -j$(nproc)
-make udp_chat -j$(nproc)
+make -j$(nproc)
 ```
 
-### 2. Arkadaşınız için
+### 2. Manuel Kurulum
 
 ```bash
-# Arkadaşınızın bilgisayarında
-./build_friend.sh
+# Sistem güncellemesi
+sudo apt update
+
+# Temel araçlar
+sudo apt install -y build-essential cmake pkg-config git
+
+# OpenCV (zorunlu)
+sudo apt install -y libopencv-dev
+
+# FFmpeg (opsiyonel)
+sudo apt install -y libavcodec-dev libavformat-dev libavutil-dev libswscale-dev
+
+# Jerasure (opsiyonel)
+sudo apt install -y libjerasure-dev
+
+# Build
+mkdir build && cd build
+cmake ..
+make -j$(nproc)
 ```
 
-## 📹 Video Chat Kullanımı
+## 🎮 Kullanım
 
-### Her iki taraf da aynı uygulamayı kullanır:
+### Video Chat Uygulaması
 
 ```bash
+cd build
 ./video_chat
 ```
 
-### Örnek Kullanım:
+Manuel IP ve port girişi ile görüntülü video chat.
 
-**Sizin Tarafınız (192.168.1.254):**
-```
-Kendi IP adresinizi girin: 192.168.1.254
-Kendi port numaranızı girin (1-65535): 45001
-Karşı tarafın IP adresini girin: 192.168.1.5
-Karşı tarafın port numarasını girin (1-65535): 45000
-```
-
-**Arkadaşınızın Tarafı (192.168.1.5):**
-```
-Kendi IP adresinizi girin: 192.168.1.5
-Kendi port numaranızı girin (1-65535): 45000
-Karşı tarafın IP adresini girin: 192.168.1.254
-Karşı tarafın port numarasını girin (1-65535): 45001
-```
-
-## 💬 UDP Chat Kullanımı
+### UDP Chat Uygulaması
 
 ```bash
+cd build
 ./udp_chat
 ```
 
-## 🎯 Teknik Detaylar
+Metin tabanlı UDP chat uygulaması.
 
-- **Video Çözünürlüğü:** 640x480
-- **FPS:** 30
-- **Sıkıştırma:** JPEG 80% kalite
-- **Protokol:** UDP
-- **Buffer Boyutu:** 65KB (video frame'leri için)
-
-## 🔧 Gereksinimler
-
-- **OpenCV4** (`libopencv-dev`)
-- **FFmpeg** (`ffmpeg libavcodec-dev`)
-- **C++17** uyumlu derleyici
-- **Linux** (Ubuntu/Debian)
-
-## 📦 Kurulum
+### UDP Test Uygulaması
 
 ```bash
-# Ubuntu/Debian
-sudo apt update
-sudo apt install build-essential cmake pkg-config
-sudo apt install libopencv-dev ffmpeg libavcodec-dev
+cd build
+./udp_test
+```
+
+Basit UDP bağlantı testi.
+
+## 🔧 Yapılandırma
+
+### Engine Konfigürasyonu
+
+```cpp
+EngineConfig config;
+config.width = 1280;           // Video genişliği
+config.height = 720;           // Video yüksekliği
+config.fps = 30;              // FPS
+config.bitrate_kbps = 3000;   // Bitrate
+config.max_chunk_size = 1000; // Maksimum chunk boyutu
+config.k_chunks = 8;          // Data chunk sayısı
+config.r_chunks = 2;          // Parity chunk sayısı
+config.jitter_buffer_ms = 100; // Jitter buffer süresi
+
+// Path konfigürasyonu
+config.paths.emplace_back("192.168.1.100", 45000);
+```
+
+## 📁 Proje Yapısı
+
+```
+Nova_Engine_V3/
+├── src/
+│   ├── core/           # Ana motor
+│   ├── media/          # Video işleme
+│   ├── network/        # Ağ iletişimi
+│   ├── transport/      # Veri taşıma
+│   └── common/         # Ortak bileşenler
+├── build/              # Build çıktıları
+├── tests/              # Test dosyaları
+├── libs/               # Harici kütüphaneler
+├── CMakeLists.txt      # Build konfigürasyonu
+├── install_dependencies.sh # Kurulum scripti
+└── README.md           # Bu dosya
 ```
 
 ## 🐛 Sorun Giderme
 
-### Kamera açılmıyor:
+### FFmpeg Bulunamadı
 ```bash
-# Kamera izinlerini kontrol edin
-ls -la /dev/video*
-# Gerekirse kullanıcıyı video grubuna ekleyin
-sudo usermod -a -G video $USER
+sudo apt install -y libavcodec-dev libavformat-dev libavutil-dev libswscale-dev
 ```
 
-### Port bağlanamıyor:
-- Farklı port numarası deneyin
-- Firewall ayarlarını kontrol edin
-- Aynı portu kullanmadığınızdan emin olun
+### OpenCV Bulunamadı
+```bash
+sudo apt install -y libopencv-dev
+```
+
+### CMake Hatası
+```bash
+sudo apt install -y cmake build-essential
+```
+
+### Build Hatası
+```bash
+# Temiz build
+rm -rf build
+mkdir build && cd build
+cmake ..
+make clean
+make -j$(nproc)
+```
+
+## 🔍 Hata Ayıklama
+
+### Log Seviyeleri
+- `LOG_DEBUG`: Detaylı debug bilgileri
+- `LOG_INFO`: Genel bilgiler
+- `LOG_WARNING`: Uyarılar
+- `LOG_ERROR`: Hatalar
+
+### Performans İzleme
+```bash
+# CPU kullanımı
+htop
+
+# Ağ trafiği
+iftop
+
+# Disk I/O
+iotop
+```
+
+## 🤝 Katkıda Bulunma
+
+1. Fork yapın
+2. Feature branch oluşturun (`git checkout -b feature/amazing-feature`)
+3. Commit yapın (`git commit -m 'Add amazing feature'`)
+4. Push yapın (`git push origin feature/amazing-feature`)
+5. Pull Request oluşturun
+
+## 📄 Lisans
+
+Bu proje MIT lisansı altında lisanslanmıştır.
 
 ## 📞 İletişim
 
-Video chat başarıyla çalıştıktan sonra:
-- **"Sizin Görüntünüz"** penceresi: Kendi kameranız
-- **"Karşı Taraf"** penceresi: Arkadaşınızın görüntüsü
-- **ESC tuşu** ile çıkış
+Sorularınız için issue açabilir veya pull request gönderebilirsiniz.
 
-## 🎉 Başarı!
+---
 
-Artık gerçek görüntülü iletişim kurabilirsiniz! 🎥✨
+**Not**: Bu proje eğitim amaçlıdır. Üretim ortamında kullanmadan önce güvenlik testleri yapılmalıdır.

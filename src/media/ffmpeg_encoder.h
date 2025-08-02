@@ -1,5 +1,8 @@
 // ffmpeg_encoder.h
 #pragma once
+
+// FFmpeg kütüphaneleri varsa include et
+#ifdef FFMPEG_AVAILABLE
 #include <libavcodec/avcodec.h>
 #include <libavutil/imgutils.h>
 #include <libswscale/swscale.h>
@@ -55,3 +58,31 @@ private:
     // Cleanup resources
     void cleanup();
 };
+#else
+// FFmpeg yoksa dummy class
+#include <vector>
+#include <string>
+
+class FFmpegEncoder {
+public:
+    struct EncoderConfig {
+        int width;
+        int height;
+        int fps;
+        int bitrate;
+        std::string codec_name;
+        
+        EncoderConfig(int w, int h, int f, int b, const std::string& c = "libx264")
+            : width(w), height(h), fps(f), bitrate(b), codec_name(c) {}
+    };
+    
+    FFmpegEncoder(const EncoderConfig& config) {}
+    ~FFmpegEncoder() {}
+    
+    bool initialize() { return false; }
+    std::vector<uint8_t> encode_frame(const uint8_t*, int, int) { return {}; }
+    std::vector<std::vector<uint8_t>> flush() { return {}; }
+    const EncoderConfig& get_config() const { static EncoderConfig c; return c; }
+    bool is_initialized() const { return false; }
+};
+#endif

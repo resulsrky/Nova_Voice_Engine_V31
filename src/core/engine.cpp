@@ -28,15 +28,16 @@ Engine::~Engine() {
 
 void Engine::initialize_components() {
     try {
-        // Initialize FFmpeg encoder
+        // Initialize FFmpeg encoder (if available)
         FFmpegEncoder::EncoderConfig encoder_config(
             config_.width, config_.height, config_.fps, 
             config_.bitrate_kbps, "libx264"
         );
         encoder_ = std::make_unique<FFmpegEncoder>(encoder_config);
         
+        // Try to initialize encoder, but don't fail if FFmpeg is not available
         if (!encoder_->initialize()) {
-            throw std::runtime_error("FFmpeg encoder başlatılamadı");
+            LOG_WARNING("FFmpeg encoder başlatılamadı. Video encoding devre dışı.");
         }
         
         // Initialize slicer
@@ -164,10 +165,19 @@ void Engine::video_processing_loop() {
             // Convert frame to RGB
             cv::cvtColor(frame, frame, cv::COLOR_BGR2RGB);
             
-            // Encode frame
-            std::vector<uint8_t> encoded_data = encoder_->encode_frame(
-                frame.data, frame.cols, frame.rows
-            );
+            // Encode frame (if encoder is available)
+            std::vector<uint8_t> encoded_data;
+            if (encoder_ && encoder_->is_initialized()) {
+                encoded_data = encoder_->encode_frame(
+                    frame.data, frame.cols, frame.rows
+                );
+            } else {
+                // Fallback: convert to JPEG
+                std::vector<uchar> buffer;
+                std::vector<int> params = {cv::IMWRITE_JPEG_QUALITY, 80};
+                cv::imencode(".jpg", frame, buffer, params);
+                encoded_data.assign(buffer.begin(), buffer.end());
+            }
             
             if (!encoded_data.empty()) {
                 // Slice encoded data

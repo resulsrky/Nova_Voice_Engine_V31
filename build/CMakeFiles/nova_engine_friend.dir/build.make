@@ -97,24 +97,10 @@ CMakeFiles/nova_engine_friend.dir/src/core/engine.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/nova_engine_friend.dir/src/core/engine.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/raulcto/CLionProjects/Nova_Engine_V3/src/core/engine.cpp -o CMakeFiles/nova_engine_friend.dir/src/core/engine.cpp.s
 
-CMakeFiles/nova_engine_friend.dir/src/media/ffmpeg_encoder.cpp.o: CMakeFiles/nova_engine_friend.dir/flags.make
-CMakeFiles/nova_engine_friend.dir/src/media/ffmpeg_encoder.cpp.o: ../src/media/ffmpeg_encoder.cpp
-CMakeFiles/nova_engine_friend.dir/src/media/ffmpeg_encoder.cpp.o: CMakeFiles/nova_engine_friend.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/raulcto/CLionProjects/Nova_Engine_V3/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/nova_engine_friend.dir/src/media/ffmpeg_encoder.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/nova_engine_friend.dir/src/media/ffmpeg_encoder.cpp.o -MF CMakeFiles/nova_engine_friend.dir/src/media/ffmpeg_encoder.cpp.o.d -o CMakeFiles/nova_engine_friend.dir/src/media/ffmpeg_encoder.cpp.o -c /home/raulcto/CLionProjects/Nova_Engine_V3/src/media/ffmpeg_encoder.cpp
-
-CMakeFiles/nova_engine_friend.dir/src/media/ffmpeg_encoder.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/nova_engine_friend.dir/src/media/ffmpeg_encoder.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/raulcto/CLionProjects/Nova_Engine_V3/src/media/ffmpeg_encoder.cpp > CMakeFiles/nova_engine_friend.dir/src/media/ffmpeg_encoder.cpp.i
-
-CMakeFiles/nova_engine_friend.dir/src/media/ffmpeg_encoder.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/nova_engine_friend.dir/src/media/ffmpeg_encoder.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/raulcto/CLionProjects/Nova_Engine_V3/src/media/ffmpeg_encoder.cpp -o CMakeFiles/nova_engine_friend.dir/src/media/ffmpeg_encoder.cpp.s
-
 CMakeFiles/nova_engine_friend.dir/src/media/slicer.cpp.o: CMakeFiles/nova_engine_friend.dir/flags.make
 CMakeFiles/nova_engine_friend.dir/src/media/slicer.cpp.o: ../src/media/slicer.cpp
 CMakeFiles/nova_engine_friend.dir/src/media/slicer.cpp.o: CMakeFiles/nova_engine_friend.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/raulcto/CLionProjects/Nova_Engine_V3/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/nova_engine_friend.dir/src/media/slicer.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/raulcto/CLionProjects/Nova_Engine_V3/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/nova_engine_friend.dir/src/media/slicer.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/nova_engine_friend.dir/src/media/slicer.cpp.o -MF CMakeFiles/nova_engine_friend.dir/src/media/slicer.cpp.o.d -o CMakeFiles/nova_engine_friend.dir/src/media/slicer.cpp.o -c /home/raulcto/CLionProjects/Nova_Engine_V3/src/media/slicer.cpp
 
 CMakeFiles/nova_engine_friend.dir/src/media/slicer.cpp.i: cmake_force
@@ -128,7 +114,7 @@ CMakeFiles/nova_engine_friend.dir/src/media/slicer.cpp.s: cmake_force
 CMakeFiles/nova_engine_friend.dir/src/media/erasure_coder.cpp.o: CMakeFiles/nova_engine_friend.dir/flags.make
 CMakeFiles/nova_engine_friend.dir/src/media/erasure_coder.cpp.o: ../src/media/erasure_coder.cpp
 CMakeFiles/nova_engine_friend.dir/src/media/erasure_coder.cpp.o: CMakeFiles/nova_engine_friend.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/raulcto/CLionProjects/Nova_Engine_V3/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/nova_engine_friend.dir/src/media/erasure_coder.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/raulcto/CLionProjects/Nova_Engine_V3/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/nova_engine_friend.dir/src/media/erasure_coder.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/nova_engine_friend.dir/src/media/erasure_coder.cpp.o -MF CMakeFiles/nova_engine_friend.dir/src/media/erasure_coder.cpp.o.d -o CMakeFiles/nova_engine_friend.dir/src/media/erasure_coder.cpp.o -c /home/raulcto/CLionProjects/Nova_Engine_V3/src/media/erasure_coder.cpp
 
 CMakeFiles/nova_engine_friend.dir/src/media/erasure_coder.cpp.i: cmake_force
@@ -142,7 +128,7 @@ CMakeFiles/nova_engine_friend.dir/src/media/erasure_coder.cpp.s: cmake_force
 CMakeFiles/nova_engine_friend.dir/src/network/scheduler.cpp.o: CMakeFiles/nova_engine_friend.dir/flags.make
 CMakeFiles/nova_engine_friend.dir/src/network/scheduler.cpp.o: ../src/network/scheduler.cpp
 CMakeFiles/nova_engine_friend.dir/src/network/scheduler.cpp.o: CMakeFiles/nova_engine_friend.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/raulcto/CLionProjects/Nova_Engine_V3/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/nova_engine_friend.dir/src/network/scheduler.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/raulcto/CLionProjects/Nova_Engine_V3/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/nova_engine_friend.dir/src/network/scheduler.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/nova_engine_friend.dir/src/network/scheduler.cpp.o -MF CMakeFiles/nova_engine_friend.dir/src/network/scheduler.cpp.o.d -o CMakeFiles/nova_engine_friend.dir/src/network/scheduler.cpp.o -c /home/raulcto/CLionProjects/Nova_Engine_V3/src/network/scheduler.cpp
 
 CMakeFiles/nova_engine_friend.dir/src/network/scheduler.cpp.i: cmake_force
@@ -156,7 +142,7 @@ CMakeFiles/nova_engine_friend.dir/src/network/scheduler.cpp.s: cmake_force
 CMakeFiles/nova_engine_friend.dir/src/network/sender_receiver.cpp.o: CMakeFiles/nova_engine_friend.dir/flags.make
 CMakeFiles/nova_engine_friend.dir/src/network/sender_receiver.cpp.o: ../src/network/sender_receiver.cpp
 CMakeFiles/nova_engine_friend.dir/src/network/sender_receiver.cpp.o: CMakeFiles/nova_engine_friend.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/raulcto/CLionProjects/Nova_Engine_V3/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/nova_engine_friend.dir/src/network/sender_receiver.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/raulcto/CLionProjects/Nova_Engine_V3/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/nova_engine_friend.dir/src/network/sender_receiver.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/nova_engine_friend.dir/src/network/sender_receiver.cpp.o -MF CMakeFiles/nova_engine_friend.dir/src/network/sender_receiver.cpp.o.d -o CMakeFiles/nova_engine_friend.dir/src/network/sender_receiver.cpp.o -c /home/raulcto/CLionProjects/Nova_Engine_V3/src/network/sender_receiver.cpp
 
 CMakeFiles/nova_engine_friend.dir/src/network/sender_receiver.cpp.i: cmake_force
@@ -170,7 +156,7 @@ CMakeFiles/nova_engine_friend.dir/src/network/sender_receiver.cpp.s: cmake_force
 CMakeFiles/nova_engine_friend.dir/src/network/path_monitor.cpp.o: CMakeFiles/nova_engine_friend.dir/flags.make
 CMakeFiles/nova_engine_friend.dir/src/network/path_monitor.cpp.o: ../src/network/path_monitor.cpp
 CMakeFiles/nova_engine_friend.dir/src/network/path_monitor.cpp.o: CMakeFiles/nova_engine_friend.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/raulcto/CLionProjects/Nova_Engine_V3/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/nova_engine_friend.dir/src/network/path_monitor.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/raulcto/CLionProjects/Nova_Engine_V3/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/nova_engine_friend.dir/src/network/path_monitor.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/nova_engine_friend.dir/src/network/path_monitor.cpp.o -MF CMakeFiles/nova_engine_friend.dir/src/network/path_monitor.cpp.o.d -o CMakeFiles/nova_engine_friend.dir/src/network/path_monitor.cpp.o -c /home/raulcto/CLionProjects/Nova_Engine_V3/src/network/path_monitor.cpp
 
 CMakeFiles/nova_engine_friend.dir/src/network/path_monitor.cpp.i: cmake_force
@@ -184,7 +170,7 @@ CMakeFiles/nova_engine_friend.dir/src/network/path_monitor.cpp.s: cmake_force
 CMakeFiles/nova_engine_friend.dir/src/transport/smart_collector.cpp.o: CMakeFiles/nova_engine_friend.dir/flags.make
 CMakeFiles/nova_engine_friend.dir/src/transport/smart_collector.cpp.o: ../src/transport/smart_collector.cpp
 CMakeFiles/nova_engine_friend.dir/src/transport/smart_collector.cpp.o: CMakeFiles/nova_engine_friend.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/raulcto/CLionProjects/Nova_Engine_V3/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/nova_engine_friend.dir/src/transport/smart_collector.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/raulcto/CLionProjects/Nova_Engine_V3/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/nova_engine_friend.dir/src/transport/smart_collector.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/nova_engine_friend.dir/src/transport/smart_collector.cpp.o -MF CMakeFiles/nova_engine_friend.dir/src/transport/smart_collector.cpp.o.d -o CMakeFiles/nova_engine_friend.dir/src/transport/smart_collector.cpp.o -c /home/raulcto/CLionProjects/Nova_Engine_V3/src/transport/smart_collector.cpp
 
 CMakeFiles/nova_engine_friend.dir/src/transport/smart_collector.cpp.i: cmake_force
@@ -195,30 +181,44 @@ CMakeFiles/nova_engine_friend.dir/src/transport/smart_collector.cpp.s: cmake_for
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/nova_engine_friend.dir/src/transport/smart_collector.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/raulcto/CLionProjects/Nova_Engine_V3/src/transport/smart_collector.cpp -o CMakeFiles/nova_engine_friend.dir/src/transport/smart_collector.cpp.s
 
+CMakeFiles/nova_engine_friend.dir/src/media/ffmpeg_encoder.cpp.o: CMakeFiles/nova_engine_friend.dir/flags.make
+CMakeFiles/nova_engine_friend.dir/src/media/ffmpeg_encoder.cpp.o: ../src/media/ffmpeg_encoder.cpp
+CMakeFiles/nova_engine_friend.dir/src/media/ffmpeg_encoder.cpp.o: CMakeFiles/nova_engine_friend.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/raulcto/CLionProjects/Nova_Engine_V3/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/nova_engine_friend.dir/src/media/ffmpeg_encoder.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/nova_engine_friend.dir/src/media/ffmpeg_encoder.cpp.o -MF CMakeFiles/nova_engine_friend.dir/src/media/ffmpeg_encoder.cpp.o.d -o CMakeFiles/nova_engine_friend.dir/src/media/ffmpeg_encoder.cpp.o -c /home/raulcto/CLionProjects/Nova_Engine_V3/src/media/ffmpeg_encoder.cpp
+
+CMakeFiles/nova_engine_friend.dir/src/media/ffmpeg_encoder.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/nova_engine_friend.dir/src/media/ffmpeg_encoder.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/raulcto/CLionProjects/Nova_Engine_V3/src/media/ffmpeg_encoder.cpp > CMakeFiles/nova_engine_friend.dir/src/media/ffmpeg_encoder.cpp.i
+
+CMakeFiles/nova_engine_friend.dir/src/media/ffmpeg_encoder.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/nova_engine_friend.dir/src/media/ffmpeg_encoder.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/raulcto/CLionProjects/Nova_Engine_V3/src/media/ffmpeg_encoder.cpp -o CMakeFiles/nova_engine_friend.dir/src/media/ffmpeg_encoder.cpp.s
+
 # Object files for target nova_engine_friend
 nova_engine_friend_OBJECTS = \
 "CMakeFiles/nova_engine_friend.dir/src/core/main_friend.cpp.o" \
 "CMakeFiles/nova_engine_friend.dir/src/core/engine.cpp.o" \
-"CMakeFiles/nova_engine_friend.dir/src/media/ffmpeg_encoder.cpp.o" \
 "CMakeFiles/nova_engine_friend.dir/src/media/slicer.cpp.o" \
 "CMakeFiles/nova_engine_friend.dir/src/media/erasure_coder.cpp.o" \
 "CMakeFiles/nova_engine_friend.dir/src/network/scheduler.cpp.o" \
 "CMakeFiles/nova_engine_friend.dir/src/network/sender_receiver.cpp.o" \
 "CMakeFiles/nova_engine_friend.dir/src/network/path_monitor.cpp.o" \
-"CMakeFiles/nova_engine_friend.dir/src/transport/smart_collector.cpp.o"
+"CMakeFiles/nova_engine_friend.dir/src/transport/smart_collector.cpp.o" \
+"CMakeFiles/nova_engine_friend.dir/src/media/ffmpeg_encoder.cpp.o"
 
 # External object files for target nova_engine_friend
 nova_engine_friend_EXTERNAL_OBJECTS =
 
 nova_engine_friend: CMakeFiles/nova_engine_friend.dir/src/core/main_friend.cpp.o
 nova_engine_friend: CMakeFiles/nova_engine_friend.dir/src/core/engine.cpp.o
-nova_engine_friend: CMakeFiles/nova_engine_friend.dir/src/media/ffmpeg_encoder.cpp.o
 nova_engine_friend: CMakeFiles/nova_engine_friend.dir/src/media/slicer.cpp.o
 nova_engine_friend: CMakeFiles/nova_engine_friend.dir/src/media/erasure_coder.cpp.o
 nova_engine_friend: CMakeFiles/nova_engine_friend.dir/src/network/scheduler.cpp.o
 nova_engine_friend: CMakeFiles/nova_engine_friend.dir/src/network/sender_receiver.cpp.o
 nova_engine_friend: CMakeFiles/nova_engine_friend.dir/src/network/path_monitor.cpp.o
 nova_engine_friend: CMakeFiles/nova_engine_friend.dir/src/transport/smart_collector.cpp.o
+nova_engine_friend: CMakeFiles/nova_engine_friend.dir/src/media/ffmpeg_encoder.cpp.o
 nova_engine_friend: CMakeFiles/nova_engine_friend.dir/build.make
 nova_engine_friend: /usr/lib/x86_64-linux-gnu/libopencv_stitching.so.4.5.4d
 nova_engine_friend: /usr/lib/x86_64-linux-gnu/libopencv_alphamat.so.4.5.4d

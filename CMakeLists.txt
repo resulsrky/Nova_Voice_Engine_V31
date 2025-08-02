@@ -9,9 +9,24 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # --- Find Core Libraries ---
 # FFmpeg - use pkg-config instead of find_package
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(FFMPEG REQUIRED libavcodec libavformat libavutil libswscale)
 
-find_package(OpenCV REQUIRED)
+# FFmpeg kütüphanelerini kontrol et
+pkg_check_modules(FFMPEG libavcodec libavformat libavutil libswscale)
+if(NOT FFMPEG_FOUND)
+    message(WARNING "FFmpeg kütüphaneleri bulunamadı. Video encoding devre dışı.")
+    set(FFMPEG_AVAILABLE FALSE)
+else()
+    set(FFMPEG_AVAILABLE TRUE)
+    message(STATUS "FFmpeg kütüphaneleri bulundu")
+endif()
+
+# OpenCV kontrol et
+find_package(OpenCV)
+if(NOT OpenCV_FOUND)
+    message(FATAL_ERROR "OpenCV bulunamadı. Lütfen OpenCV kurun: sudo apt install libopencv-dev")
+else()
+    message(STATUS "OpenCV bulundu: ${OpenCV_VERSION}")
+endif()
 
 # --- Jerasure & GF-Complete (Reed-Solomon) ---
 # Geçici olarak devre dışı - Jerasure kütüphanesi eksik
@@ -40,7 +55,6 @@ set(CUSTOM_LIBS "")
 add_executable(nova_engine 
     src/core/main.cpp
     src/core/engine.cpp
-    src/media/ffmpeg_encoder.cpp
     src/media/slicer.cpp
     src/media/erasure_coder.cpp
     src/network/scheduler.cpp
@@ -49,11 +63,16 @@ add_executable(nova_engine
     src/transport/smart_collector.cpp
 )
 
+# FFmpeg varsa ffmpeg_encoder.cpp ekle
+if(FFMPEG_AVAILABLE)
+    target_sources(nova_engine PRIVATE src/media/ffmpeg_encoder.cpp)
+    target_compile_definitions(nova_engine PRIVATE FFMPEG_AVAILABLE)
+endif()
+
 # --- Add Friend's Executable ---
 add_executable(nova_engine_friend 
     src/core/main_friend.cpp
     src/core/engine.cpp
-    src/media/ffmpeg_encoder.cpp
     src/media/slicer.cpp
     src/media/erasure_coder.cpp
     src/network/scheduler.cpp
@@ -61,6 +80,12 @@ add_executable(nova_engine_friend
     src/network/path_monitor.cpp
     src/transport/smart_collector.cpp
 )
+
+# FFmpeg varsa ffmpeg_encoder.cpp ekle
+if(FFMPEG_AVAILABLE)
+    target_sources(nova_engine_friend PRIVATE src/media/ffmpeg_encoder.cpp)
+    target_compile_definitions(nova_engine_friend PRIVATE FFMPEG_AVAILABLE)
+endif()
 
 # --- Add UDP Test Applications ---
 add_executable(udp_test src/core/udp_test.cpp)
@@ -71,7 +96,6 @@ add_executable(video_chat src/core/main.cpp)
 # --- Link All Libraries ---
 target_link_libraries(nova_engine
     PRIVATE
-    ${FFMPEG_LIBRARIES}
     ${OpenCV_LIBS}
     ${CUSTOM_LIBS}
     pthread
@@ -79,22 +103,27 @@ target_link_libraries(nova_engine
 
 target_link_libraries(nova_engine_friend
     PRIVATE
-    ${FFMPEG_LIBRARIES}
     ${OpenCV_LIBS}
     ${CUSTOM_LIBS}
     pthread
 )
 
+# FFmpeg varsa linkle
+if(FFMPEG_AVAILABLE)
+    target_link_libraries(nova_engine PRIVATE ${FFMPEG_LIBRARIES})
+    target_link_libraries(nova_engine_friend PRIVATE ${FFMPEG_LIBRARIES})
+    target_include_directories(nova_engine PRIVATE ${FFMPEG_INCLUDE_DIRS})
+    target_include_directories(nova_engine_friend PRIVATE ${FFMPEG_INCLUDE_DIRS})
+    target_compile_options(nova_engine PRIVATE ${FFMPEG_CFLAGS_OTHER})
+    target_compile_options(nova_engine_friend PRIVATE ${FFMPEG_CFLAGS_OTHER})
+    target_link_directories(nova_engine PRIVATE ${FFMPEG_LIBRARY_DIRS})
+    target_link_directories(nova_engine_friend PRIVATE ${FFMPEG_LIBRARY_DIRS})
+endif()
+
 target_link_libraries(udp_test PRIVATE pthread)
 target_link_libraries(udp_test_friend PRIVATE pthread)
 target_link_libraries(video_chat PRIVATE pthread ${OpenCV_LIBS})
 target_link_libraries(udp_chat PRIVATE pthread)
-
-# Include directories for FFmpeg
-target_include_directories(nova_engine PRIVATE ${FFMPEG_INCLUDE_DIRS})
-target_include_directories(nova_engine_friend PRIVATE ${FFMPEG_INCLUDE_DIRS})
-target_compile_options(nova_engine PRIVATE ${FFMPEG_CFLAGS_OTHER})
-target_compile_options(nova_engine_friend PRIVATE ${FFMPEG_CFLAGS_OTHER})
 
 # --- Compiler Flags for Performance ---
 target_compile_options(nova_engine PRIVATE -O3 -DNDEBUG)
