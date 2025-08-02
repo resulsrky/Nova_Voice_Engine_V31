@@ -10,15 +10,19 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # FFmpeg - use pkg-config instead of find_package
 find_package(PkgConfig REQUIRED)
 
-# FFmpeg kütüphanelerini kontrol et
-pkg_check_modules(FFMPEG libavcodec libavformat libavutil libswscale)
-if(NOT FFMPEG_FOUND)
-    message(WARNING "FFmpeg kütüphaneleri bulunamadı. Video encoding devre dışı.")
-    set(FFMPEG_AVAILABLE FALSE)
-else()
-    set(FFMPEG_AVAILABLE TRUE)
-    message(STATUS "FFmpeg kütüphaneleri bulundu")
-endif()
+# FFmpeg kütüphanelerini kontrol et - ŞİMDİLİK DEVRE DIŞI
+# pkg_check_modules(FFMPEG libavcodec libavformat libavutil libswscale)
+# if(NOT FFMPEG_FOUND)
+#     message(WARNING "FFmpeg kütüphaneleri bulunamadı. Video encoding devre dışı.")
+#     set(FFMPEG_AVAILABLE FALSE)
+# else()
+#     set(FFMPEG_AVAILABLE TRUE)
+#     message(STATUS "FFmpeg kütüphaneleri bulundu")
+# endif()
+
+# FFmpeg'i şimdilik devre dışı bırak
+set(FFMPEG_AVAILABLE FALSE)
+message(STATUS "FFmpeg şimdilik devre dışı - sadece JPEG encoding kullanılacak")
 
 # OpenCV kontrol et
 find_package(OpenCV)
@@ -108,10 +112,14 @@ target_link_libraries(nova_engine_friend
     pthread
 )
 
-# FFmpeg varsa linkle
+# FFmpeg varsa linkle - DÜZELTME: Doğru kütüphane isimleri
 if(FFMPEG_AVAILABLE)
-    target_link_libraries(nova_engine PRIVATE ${FFMPEG_LIBRARIES})
-    target_link_libraries(nova_engine_friend PRIVATE ${FFMPEG_LIBRARIES})
+    target_link_libraries(nova_engine PRIVATE 
+        avcodec avformat avutil swscale
+    )
+    target_link_libraries(nova_engine_friend PRIVATE 
+        avcodec avformat avutil swscale
+    )
     target_include_directories(nova_engine PRIVATE ${FFMPEG_INCLUDE_DIRS})
     target_include_directories(nova_engine_friend PRIVATE ${FFMPEG_INCLUDE_DIRS})
     target_compile_options(nova_engine PRIVATE ${FFMPEG_CFLAGS_OTHER})

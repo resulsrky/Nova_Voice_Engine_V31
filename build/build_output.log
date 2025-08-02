@@ -1,0 +1,32 @@
+[  3%] Building CXX object CMakeFiles/udp_chat.dir/src/core/udp_chat.cpp.o
+[  7%] Building CXX object CMakeFiles/udp_test_friend.dir/src/core/udp_test_friend.cpp.o
+[ 11%] Building CXX object CMakeFiles/nova_engine.dir/src/core/main.cpp.o
+[ 15%] Building CXX object CMakeFiles/nova_engine.dir/src/core/engine.cpp.o
+[ 19%] Building CXX object CMakeFiles/udp_test.dir/src/core/udp_test.cpp.o
+[ 23%] Building CXX object CMakeFiles/nova_engine.dir/src/media/slicer.cpp.o
+[ 30%] Building CXX object CMakeFiles/nova_engine_friend.dir/src/media/erasure_coder.cpp.o
+[ 30%] Building CXX object CMakeFiles/nova_engine.dir/src/network/path_monitor.cpp.o
+[ 34%] Building CXX object CMakeFiles/nova_engine.dir/src/network/scheduler.cpp.o
+[ 38%] Building CXX object CMakeFiles/nova_engine.dir/src/media/erasure_coder.cpp.o
+[ 42%] Building CXX object CMakeFiles/nova_engine.dir/src/network/sender_receiver.cpp.o
+[ 46%] Building CXX object CMakeFiles/nova_engine_friend.dir/src/network/scheduler.cpp.o
+[ 50%] Building CXX object CMakeFiles/nova_engine_friend.dir/src/media/slicer.cpp.o
+[ 57%] Building CXX object CMakeFiles/nova_engine_friend.dir/src/core/main_friend.cpp.o
+[ 57%] Building CXX object CMakeFiles/nova_engine_friend.dir/src/network/path_monitor.cpp.o
+[ 61%] Building CXX object CMakeFiles/nova_engine.dir/src/transport/smart_collector.cpp.o
+[ 65%] Building CXX object CMakeFiles/video_chat.dir/src/core/main.cpp.o
+[ 69%] Building CXX object CMakeFiles/nova_engine_friend.dir/src/transport/smart_collector.cpp.o
+[ 76%] Building CXX object CMakeFiles/nova_engine_friend.dir/src/core/engine.cpp.o
+[ 76%] Building CXX object CMakeFiles/nova_engine_friend.dir/src/network/sender_receiver.cpp.o
+[ 80%] Linking CXX executable udp_test
+[ 84%] Linking CXX executable udp_test_friend
+[ 84%] Built target udp_test
+[ 84%] Built target udp_test_friend
+[ 88%] Linking CXX executable udp_chat
+[ 88%] Built target udp_chat
+[ 92%] Linking CXX executable nova_engine_friend
+[ 92%] Built target nova_engine_friend
+[ 96%] Linking CXX executable video_chat
+[ 96%] Built target video_chat
+[100%] Linking CXX executable nova_engine
+[100%] Built target nova_engine

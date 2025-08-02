@@ -55,9 +55,9 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Sadece çalışan uygulamaları build et
-echo "Uygulamalar build ediliyor..."
-make video_chat udp_chat udp_test udp_test_friend -j$(nproc) > build_output.log 2>&1
+# Tüm uygulamaları build et
+echo "Tüm uygulamalar build ediliyor..."
+make -j$(nproc) > build_output.log 2>&1
 if [ $? -ne 0 ]; then
     echo -e "${RED}Build hatası! Log dosyasını kontrol edin: build/build_output.log${NC}"
     exit 1
@@ -66,7 +66,7 @@ fi
 echo -e "${GREEN}3. Test ediliyor...${NC}"
 
 # Uygulamaların varlığını kontrol et
-if [ -f "video_chat" ] && [ -f "udp_chat" ] && [ -f "udp_test" ] && [ -f "udp_test_friend" ]; then
+if [ -f "video_chat" ] && [ -f "udp_chat" ] && [ -f "udp_test" ] && [ -f "udp_test_friend" ] && [ -f "nova_engine" ] && [ -f "nova_engine_friend" ]; then
     echo -e "${GREEN}✓ Tüm uygulamalar başarıyla build edildi!${NC}"
 else
     echo -e "${RED}✗ Bazı uygulamalar build edilemedi${NC}"
@@ -77,10 +77,12 @@ echo ""
 echo -e "${GREEN}=== Kurulum Tamamlandı! ===${NC}"
 echo ""
 echo -e "${YELLOW}Kullanılabilir uygulamalar:${NC}"
-echo "  • ./video_chat     - Görüntülü video chat"
-echo "  • ./udp_chat       - Metin tabanlı UDP chat"
-echo "  • ./udp_test       - UDP test uygulaması"
-echo "  • ./udp_test_friend - UDP test uygulaması (arkadaş)"
+echo "  • ./video_chat         - Görüntülü video chat"
+echo "  • ./udp_chat           - Metin tabanlı UDP chat"
+echo "  • ./udp_test           - UDP test uygulaması"
+echo "  • ./udp_test_friend    - UDP test uygulaması (arkadaş)"
+echo "  • ./nova_engine        - Tam Nova Engine (ana)"
+echo "  • ./nova_engine_friend - Tam Nova Engine (arkadaş)"
 echo ""
 echo -e "${YELLOW}Kullanım örneği:${NC}"
 echo "  ./video_chat"

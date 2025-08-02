@@ -82,7 +82,7 @@ public:
     bool initialize() { return false; }
     std::vector<uint8_t> encode_frame(const uint8_t*, int, int) { return {}; }
     std::vector<std::vector<uint8_t>> flush() { return {}; }
-    const EncoderConfig& get_config() const { static EncoderConfig c; return c; }
+    const EncoderConfig& get_config() const { static EncoderConfig c(0,0,0,0,""); return c; }
     bool is_initialized() const { return false; }
 };
 #endif
